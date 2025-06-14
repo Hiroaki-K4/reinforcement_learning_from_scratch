@@ -1,4 +1,5 @@
 import numpy as np
+import common.gridworld_render as render_helper
 
 
 class GridWorld:
@@ -37,22 +38,23 @@ class GridWorld:
             for w in range(self.width):
                 yield (h, w)
 
+    def next_state(self, state, action):
+        action_move_map = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        move = action_move_map[action]
+        next_state = (state[0] + move[0], state[1] + move[1])
+        ny, nx = next_state
 
-def main():
-    env = GridWorld()
+        if nx < 0 or nx >= self.width or ny < 0 or ny >= self.height:
+            next_state = state
+        elif next_state == self.wall_state:
+            next_state = state
 
-    print(env.height)
-    print(env.width)
-    print(env.shape)
+        return next_state
 
-    for action in env.actions():
-        print(action)
+    def reward(self, state, action, next_state):
+        return self.reward_map[next_state]
 
-    print("===")
-
-    for state in env.states():
-        print(state)
-
-
-if __name__ == "__main__":
-    main()
+    def render_v(self, v=None, policy=None, print_value=True):
+        renderer = render_helper.Renderer(self.reward_map, self.goal_state,
+                                        self.wall_state)
+        renderer.render_v(v, policy, print_value)
