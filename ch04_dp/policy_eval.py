@@ -1,3 +1,13 @@
+if "__file__" in globals():
+    import os
+    import sys
+
+    sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from collections import defaultdict
+
+from common.gridworld import GridWorld
+
+
 def eval_onestep(pi, V, env, gamma=0.9):
     for state in env.states():
         if state == env.goal_state:
@@ -34,19 +44,11 @@ def policy_eval(pi, V, env, gamma, threshold=0.001):
     return V
 
 
-if "__file__" in globals():
-    import os
-    import sys
+if __name__ == "__main__":
+    env = GridWorld()
+    gamma = 0.9
+    pi = defaultdict(lambda: {0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25})
+    V = defaultdict(lambda: 0)
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from collections import defaultdict
-
-from common.gridworld import GridWorld
-
-env = GridWorld()
-gamma = 0.9
-pi = defaultdict(lambda: {0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25})
-V = defaultdict(lambda: 0)
-
-V = policy_eval(pi, V, env, gamma)
-env.render_v(V, pi)
+    V = policy_eval(pi, V, env, gamma)
+    env.render_v(V, pi)
