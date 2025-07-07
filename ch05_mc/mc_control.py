@@ -8,6 +8,16 @@ from collections import defaultdict
 import numpy as np
 
 
+def greedy_probs(Q, state, epsilon=0, action_size=4):
+    qs = [Q[(state, action)] for action in range(action_size)]
+    max_action = np.argmax(qs)
+
+    base_prob = epsilon / action_size
+    action_probs = {action: base_prob for action in range(action_size)}
+    action_probs[max_action] += (1 - epsilon)
+    return action_probs
+
+
 class McAgent:
     def __init__(self):
         self.gamma = 0.9
@@ -31,3 +41,14 @@ class McAgent:
 
     def reset(self):
         self.memory.clear()
+
+    def update(self):
+        G = 0
+        for data in reversed(self.memory):
+            state, action, reward = data
+            G = self.gamma * G + reward
+            key = (state, action)
+            self.cnts[key] += 1
+            self.Q[key] += (G - self.Q[key]) / self.cnts[key]
+            self.pi[state] = greedy_probs(self.Q, state)
+
