@@ -1,6 +1,14 @@
+if "__file__" in globals():
+    import os
+    import sys
+
+    sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 from collections import defaultdict, deque
+
 import numpy as np
-from common.utis import greedy_probs
+from common.gridworld import GridWorld
+from common.utils import greedy_probs
 
 
 class SarsaAgent:
@@ -38,3 +46,25 @@ class SarsaAgent:
         self.Q[state, action] += (target - self.Q[state, action]) * self.alpha
 
         self.pi[state] = greedy_probs(self.Q, state, self.epsilon)
+
+
+if __name__ == "__main__":
+    env = GridWorld()
+    agent = SarsaAgent()
+    episodes = 10000
+    for episode in range(episodes):
+        state = env.reset()
+        agent.reset()
+
+        while True:
+            action = agent.get_action(state)
+            next_state, reward, done = env.step(action)
+
+            agent.update(state, action, reward, done)
+
+            if done:
+                agent.update(next_state, None, None, None)
+                break
+            state = next_state
+
+    env.render_q(agent.Q)
