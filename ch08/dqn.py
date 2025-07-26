@@ -63,6 +63,7 @@ class DQNAgent:
         next_q.unchain()
         target = reward + (1 - done) * self.gamma * next_q
 
+
         loss = F.mean_squared_error(q, target)
 
         self.qnet.cleargrads()
